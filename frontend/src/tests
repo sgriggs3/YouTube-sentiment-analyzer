@@ -1,0 +1,17 @@
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
+import Analysis from '../pages/Analysis';
+import Dashboard from '../pages/Dashboard';
+
+test('renders Analysis page', () => {
+  render(<Analysis />);
+  const linkElement = screen.getByText(/Analysis Page/i);
+  expect(linkElement).toBeInTheDocument();
+});
+
+test('renders Dashboard page', () => {
+  render(<Dashboard />);
+  const linkElement = screen.getByText(/Dashboard Page/i);
+  expect(linkElement).toBeInTheDocument();
+});

@@ -41,3 +41,31 @@ The debugging process focused on identifying and resolving local execution error
 - **Text File Processing Error Handling (Beyond Config):** Identify other text files processed by the application and implement robust error handling for them if necessary.
 - **Testing:** Thoroughly test the implemented error handling solutions across local and deployment environments to ensure they are working as expected.
 - **Specific Error Handling in Frontend:** Enhance frontend error handling to handle specific error responses from the backend (e.g., display different messages for 404 vs. 500 errors).
+
+## Environment Variables for Codespaces
+
+To run this project in GitHub Codespaces, you need to set the following environment variables:
+
+- `YOUTUBE_API_KEY`: Your YouTube API key.
+- `OPENAI_API_KEY`: Your OpenAI API key.
+
+These variables should be added to the Codespaces secrets in your repository settings.
+
+## Automation Steps in Codespaces
+
+The following automation steps are configured to run in GitHub Codespaces:
+
+1. **Install Backend Dependencies:**
+   - The backend dependencies are installed using the `pip install -r requirements.txt` command.
+
+2. **Install Frontend Dependencies:**
+   - The frontend dependencies are installed using the `npm install` command in the `frontend` directory.
+
+3. **Build Frontend:**
+   - The frontend is built using the `npm run build` command in the `frontend` directory.
+
+4. **Run Backend Tests:**
+   - The backend tests are run using the `pytest` command.
+
+5. **Run Frontend Tests:**
+   - The frontend tests are run using the `npm test` command in the `frontend` directory.
