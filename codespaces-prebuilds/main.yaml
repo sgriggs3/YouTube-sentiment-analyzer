@@ -45,3 +45,8 @@ jobs:
         run: |
           cd frontend
           npm test
+
+      - name: Run automated tests
+        run: |
+          pytest backend/tests
+          cd frontend && npm test

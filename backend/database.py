@@ -4,7 +4,8 @@ from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 from config import Config
 
-engine = create_engine(Config.POSTGRES_URL)
+# Use connection pooling for database interactions
+engine = create_engine(Config.POSTGRES_URL, pool_size=10, max_overflow=20)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 

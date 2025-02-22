@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 import logging
+from backend.exceptions import YouTubeAPIError, VideoNotFoundError, QuotaExceededError, InternalServerError, ServiceUnavailableError, BadRequestError
 
 app = Flask(__name__)
 api = Api(app)
@@ -15,6 +16,24 @@ class RealTimeAnalyze(Resource):
             # In a real implementation, this would involve calling a service or running an algorithm
             analysis_result = {"video_id": video_id, "analysis": "Real-time analysis data"}
             return jsonify(analysis_result)
+        except VideoNotFoundError as e:
+            logging.error(f"Video not found for video_id {video_id}: {str(e)}")
+            return jsonify({"error": str(e)}), e.status_code
+        except QuotaExceededError as e:
+            logging.error(f"Quota exceeded for video_id {video_id}: {str(e)}")
+            return jsonify({"error": str(e)}), e.status_code
+        except InternalServerError as e:
+            logging.error(f"Internal server error for video_id {video_id}: {str(e)}")
+            return jsonify({"error": str(e)}), e.status_code
+        except ServiceUnavailableError as e:
+            logging.error(f"Service unavailable for video_id {video_id}: {str(e)}")
+            return jsonify({"error": str(e)}), e.status_code
+        except BadRequestError as e:
+            logging.error(f"Bad request for video_id {video_id}: {str(e)}")
+            return jsonify({"error": str(e)}), e.status_code
+        except YouTubeAPIError as e:
+            logging.error(f"YouTube API error for video_id {video_id}: {str(e)}")
+            return jsonify({"error": str(e)}), e.status_code
         except Exception as e:
             logging.error(f"Error during real-time analysis for video_id {video_id}: {str(e)}")
             return jsonify({"error": "An error occurred during real-time analysis"}), 500
