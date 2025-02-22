@@ -10,6 +10,7 @@ import {
   Legend
 } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
+import SentimentTrendChart from './visualizations/SentimentTrendChart';
 
 ChartJS.register(
   ArcElement,
@@ -49,6 +50,10 @@ const SentimentResults = ({ results }) => {
         <div className="chart-container">
           <h3>Sentiment Distribution</h3>
           <Pie data={pieData} />
+        </div>
+        <div className="chart-container">
+          <h3>Sentiment Trend Over Time</h3>
+          <SentimentTrendChart data={sentimentResults.trendData} />
         </div>
       </div>
 
