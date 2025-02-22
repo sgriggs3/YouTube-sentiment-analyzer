@@ -53,7 +53,7 @@ const SentimentResults = ({ results }) => {
         </div>
         <div className="chart-container">
           <h3>Sentiment Trend Over Time</h3>
-          <SentimentTrendChart data={sentimentResults.trendData} />
+          <SentimentTrendChart data={results.sentimentResults.trendData} />
         </div>
       </div>
 
