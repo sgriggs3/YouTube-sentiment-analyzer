@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography, Button } from '@mui/material';
+import { toast } from 'react-toastify';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -9,6 +10,10 @@ class ErrorBoundary extends React.Component {
 
   static getDerivedStateFromError(error) {
     return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    toast.error(error.message || 'An unexpected error occurred');
   }
 
   render() {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
-const LoadingState = ({ message = 'Loading...' }) => {
+const LoadingState = ({ message = 'Loading...', size = 40 }) => {
   return (
     <Box 
       sx={{ 
@@ -12,7 +12,7 @@ const LoadingState = ({ message = 'Loading...' }) => {
         minHeight: '200px'
       }}
     >
-      <CircularProgress size={40} />
+      <CircularProgress size={size} />
       <Typography variant="body1" sx={{ mt: 2 }}>
         {message}
       </Typography>
