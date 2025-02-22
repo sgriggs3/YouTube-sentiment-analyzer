@@ -1,29 +1,34 @@
-# Use an official Python runtime as a parent image
+# Use Python 3.9 slim image as base
 FROM python:3.9-slim
 
-# Set environment variables for non-interactive installation
+# Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install Node.js 16
-RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
-    apt-get install -y nodejs
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs
 
-# Set the working directory in the container
-WORKDIR /app
+# Create a non-root user
+RUN useradd -ms /bin/bash vscode
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Set up work directory and permissions
+WORKDIR /workspace
+RUN chown vscode:vscode /workspace
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Switch to non-root user
+USER vscode
 
-# Make port 5000 available to the world outside this container
-EXPOSE 5000
+# Set environment variables
+ENV PATH="/home/vscode/.local/bin:${PATH}"
+ENV PYTHONUNBUFFERED=1
+ENV NODE_ENV=development
 
-# Define environment variable
-ENV NAME World
-
-# Run app.py when the container launches
-CMD ["python", "app.py"]
+# The command that starts the app will be in docker-compose.yml
+CMD ["bash"]
