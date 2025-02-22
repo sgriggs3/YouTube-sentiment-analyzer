@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 import logging
+from backend.exceptions import YouTubeAPIError, VideoNotFoundError, QuotaExceededError, InternalServerError, ServiceUnavailableError, BadRequestError
 
 app = Flask(__name__)
 api = Api(app)
@@ -15,6 +16,24 @@ class RealTimeAnalyze(Resource):
             # In a real implementation, this would involve calling a service or running an algorithm
             analysis_result = {"video_id": video_id, "analysis": "Real-time analysis data"}
             return jsonify(analysis_result)
+        except VideoNotFoundError as e:
+            logging.error(f"Video not found for video_id {video_id}: {str(e)}")
+            return jsonify({"error": "Video not found"}), e.status_code
+        except QuotaExceededError as e:
+            logging.error(f"Quota exceeded for video_id {video_id}: {str(e)}")
+            return jsonify({"error": "Quota exceeded"}), e.status_code
+        except InternalServerError as e:
+            logging.error(f"Internal server error for video_id {video_id}: {str(e)}")
+            return jsonify({"error": "Internal server error"}), e.status_code
+        except ServiceUnavailableError as e:
+            logging.error(f"Service unavailable for video_id {video_id}: {str(e)}")
+            return jsonify({"error": "Service unavailable"}), e.status_code
+        except BadRequestError as e:
+            logging.error(f"Bad request for video_id {video_id}: {str(e)}")
+            return jsonify({"error": "Bad request"}), e.status_code
+        except YouTubeAPIError as e:
+            logging.error(f"YouTube API error for video_id {video_id}: {str(e)}")
+            return jsonify({"error": "YouTube API error"}), e.status_code
         except Exception as e:
             logging.error(f"Error during real-time analysis for video_id {video_id}: {str(e)}")
             return jsonify({"error": "An error occurred during real-time analysis"}), 500
@@ -36,4 +55,6 @@ class ExampleEndpoint(Resource):
 api.add_resource(ExampleEndpoint, '/api/example')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
+    app.run(debug=debug_mode)
