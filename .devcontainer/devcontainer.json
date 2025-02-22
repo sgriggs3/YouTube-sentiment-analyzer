@@ -16,5 +16,8 @@
         "ms-azuretools.vscode-docker"
     ],
     "forwardPorts": [3000, 5000],
-    "postCreateCommand": "bash .devcontainer/postCreateCommand.sh"
+    "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
+    "tasks": {
+      "build": "npm run install:all"
+    }
 }

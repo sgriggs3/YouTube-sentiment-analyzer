@@ -2,6 +2,10 @@ from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 import logging
 from backend.exceptions import YouTubeAPIError, VideoNotFoundError, QuotaExceededError, InternalServerError, ServiceUnavailableError, BadRequestError
+from backend.youtube_api import fetch_comments, fetch_video_metadata
+from backend.sentiment_analysis import analyze_sentiment
+from backend.database import get_db, Video, Comment
+import asyncio
 
 app = Flask(__name__)
 api = Api(app)
@@ -10,12 +14,21 @@ api = Api(app)
 logging.basicConfig(level=logging.DEBUG)
 
 class RealTimeAnalyze(Resource):
-    def get(self, video_id):
+    async def get(self, video_id):
         try:
-            # Placeholder for real-time analysis logic
-            # In a real implementation, this would involve calling a service or running an algorithm
-            analysis_result = {"video_id": video_id, "analysis": "Real-time analysis data"}
-            return jsonify(analysis_result)
+            async with get_db() as db:
+                video = db.query(Video).filter(Video.id == video_id).first()
+                if not video:
+                    raise VideoNotFoundError()
+
+                comments = [comment.text for comment in video.comments]
+                sentiment_results = analyze_sentiment(comments)
+                analysis_result = {
+                    "video_id": video_id,
+                    "sentiment": sentiment_results,
+                    "comment_count": len(comments)
+                }
+                return jsonify(analysis_result)
         except VideoNotFoundError as e:
             logging.error(f"Video not found for video_id {video_id}: {str(e)}")
             return jsonify({"error": "Video not found"}), e.status_code

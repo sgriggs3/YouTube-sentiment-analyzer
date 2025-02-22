@@ -3,6 +3,7 @@ from unittest.mock import Mock, patch
 from youtube_api import YouTubeAPI, create_youtube_client
 from googleapiclient.errors import HttpError
 import datetime
+from backend.cache import cache_video_metadata, cache_video_comments, get_cached_results, invalidate_cache
 
 class TestYouTubeAPI(unittest.TestCase):
     def setUp(self):
@@ -92,6 +93,32 @@ class TestYouTubeAPI(unittest.TestCase):
         client = create_youtube_client(['key1', 'key2'])
         self.assertIsNotNone(client)
         self.assertEqual(client.api_keys, ['key1', 'key2'])
+
+    @patch('backend.youtube_api.fetch_comments')
+    @patch('backend.youtube_api.fetch_video_metadata')
+    def test_cache_youtube_api_calls(self, mock_fetch_video_metadata, mock_fetch_comments):
+        video_id = 'test_video_id'
+        metadata = {'id': video_id, 'snippet': {'title': 'Test Video'}}
+        comments = ['Comment 1', 'Comment 2']
+
+        mock_fetch_video_metadata.return_value = metadata
+        mock_fetch_comments.return_value = comments
+
+        # Test caching video metadata
+        cache_video_metadata(video_id, metadata)
+        cached_metadata = get_cached_results(f"video:{video_id}:metadata")
+        self.assertEqual(cached_metadata, metadata)
+
+        # Test caching video comments
+        cache_video_comments(video_id, comments)
+        cached_comments = get_cached_results(f"video:{video_id}:comments")
+        self.assertEqual(cached_comments, comments)
+
+    @patch('backend.youtube_api.invalidate_cache')
+    def test_cache_invalidation(self, mock_invalidate_cache):
+        video_id = 'test_video_id'
+        invalidate_cache(video_id)
+        mock_invalidate_cache.assert_called_once_with(video_id)
 
 if __name__ == '__main__':
     unittest.main()
