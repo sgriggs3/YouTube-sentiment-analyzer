@@ -39,25 +39,25 @@ def get_comments():
         })
     except VideoNotFoundError as e:
         logging.error(f"Video not found for video_id {video_id}: {str(e)}")
-        return jsonify({"error": str(e)}), e.status_code
+        return jsonify({"error": "Video not found"}), e.status_code
     except QuotaExceededError as e:
         logging.error(f"Quota exceeded for video_id {video_id}: {str(e)}")
-        return jsonify({"error": str(e)}), e.status_code
+        return jsonify({"error": "Quota exceeded"}), e.status_code
     except InternalServerError as e:
         logging.error(f"Internal server error for video_id {video_id}: {str(e)}")
-        return jsonify({"error": str(e)}), e.status_code
+        return jsonify({"error": "Internal server error"}), e.status_code
     except ServiceUnavailableError as e:
         logging.error(f"Service unavailable for video_id {video_id}: {str(e)}")
-        return jsonify({"error": str(e)}), e.status_code
+        return jsonify({"error": "Service unavailable"}), e.status_code
     except BadRequestError as e:
         logging.error(f"Bad request for video_id {video_id}: {str(e)}")
-        return jsonify({"error": str(e)}), e.status_code
+        return jsonify({"error": "Bad request"}), e.status_code
     except YouTubeAPIError as e:
         logging.error(f"YouTube API error for video_id {video_id}: {str(e)}")
-        return jsonify({"error": str(e)}), e.status_code
+        return jsonify({"error": "YouTube API error"}), e.status_code
     except Exception as e:
         logging.error(f"Error during real-time analysis for video_id {video_id}: {str(e)}")
-        return jsonify({"error": "An error occurred during real-time analysis"}), 500
+        return jsonify({"error": "An error occurred"}), 500
 
 def extract_video_id(url):
     """
