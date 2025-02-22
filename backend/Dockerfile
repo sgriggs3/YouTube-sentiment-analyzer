@@ -1,30 +1,20 @@
-# Use an official Python runtime as a parent image
-FROM python:3.10-slim
+FROM python:3.9-slim
 
-# Set environment variables for non-interactive installation
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install Node.js 18
-RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs
-
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt && \
-    npm install --prefix frontend
+# Copy requirements first for better caching
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 5000 available to the world outside this container
+# Copy the rest of the application
+COPY . .
+
 EXPOSE 5000
 
-# Define environment variable
-ENV NAME World
-
-# Run app.py when the container launches
-CMD ["python", "app.py"]
+CMD ["python", "-m", "flask", "run", "--host=0.0.0.0"]
