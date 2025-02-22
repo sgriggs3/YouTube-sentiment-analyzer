@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Visualization</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Data Visualization</h1>
+    <div id="visualization-container">
+        <p>This page will display the data visualization.</p>
+        <label for="chart-type">Select Chart Type:</label>
+        <select id="chart-type">
+            <option value="line_chart.html">Line Chart</option>
+            <option value="bar_chart.html">Bar Chart</option>
+            <option value="pie_chart.html">Pie Chart</option>
+        </select>
+        <iframe id="visualization-iframe" width="800" height="600" frameborder="0"></iframe>
+    </div>
+    <script>
+        const visualizationIframe = document.getElementById('visualization-iframe');
+        const chartTypeSelect = document.getElementById('chart-type');
+        const urlParams = new URLSearchParams(window.location.search);
+        const visualizationFile = urlParams.get('visualization_file');
+
+        function updateIframeSource() {
+            const selectedChartType = chartTypeSelect.value;
+            visualizationIframe.src = selectedChartType;
+        }
+
+        chartTypeSelect.addEventListener('change', updateIframeSource);
+
+        if (visualizationFile) {
+            visualizationIframe.src = visualizationFile;
+        } else {
+            updateIframeSource();
+        }
+    </script>
+</body>
+</html>
