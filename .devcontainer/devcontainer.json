@@ -2,22 +2,30 @@
     "name": "YouTube Sentiment Analyzer",
     "dockerComposeFile": "../docker-compose.yml",
     "service": "backend",
-    "workspaceFolder": "/app",
-    "settings": {
-        "python.pythonPath": "/usr/local/bin/python",
-        "python.linting.enabled": true,
-        "python.linting.pylintEnabled": true
+    "workspaceFolder": "/workspaces/YouTube-sentiment-analyzer",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "typescript.tsdk": "node_modules/typescript/lib"
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "ms-azuretools.vscode-docker"
+            ]
+        }
     },
-    "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "ms-azuretools.vscode-docker"
-    ],
-    "forwardPorts": [3000, 5000],
+    "forwardPorts": [3000, 5000, 5432, 6379],
     "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
-    "tasks": {
-      "build": "npm run install:all"
+    "remoteUser": "root",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "16"
+        }
     }
 }
