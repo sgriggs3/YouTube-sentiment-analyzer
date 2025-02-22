@@ -1,24 +1,35 @@
 #!/bin/bash
+set -e
 
-# Install backend dependencies
-pip install --no-cache-dir -r backend/requirements.txt
+echo "Installing backend dependencies..."
+cd /workspaces/YouTube-sentiment-analyzer/backend
+pip install --no-cache-dir -r requirements.txt
 
-# Install frontend dependencies
-cd frontend && npm install && cd ..
+echo "Installing frontend dependencies..."
+cd /workspaces/YouTube-sentiment-analyzer/frontend
+npm install
 
-# Check for required environment variables
-required_vars=(
-    "YOUTUBE_API_KEY"
-    "FLASK_SECRET_KEY"
-    "POSTGRES_URL"
-    "REDIS_URL"
-)
+echo "Setting up environment variables..."
+cd /workspaces/YouTube-sentiment-analyzer
 
-for var in "${required_vars[@]}"; do
-    if [ -z "${!var}" ]; then
-        echo "Environment variable $var is not set. Please set it before proceeding."
-        exit 1
-    fi
-done
+# Create default environment variables if not exists
+if [ ! -f .env ]; then
+    cat > .env << EOL
+FLASK_ENV=development
+FLASK_SECRET_KEY=dev-secret-key
+POSTGRES_URL=postgresql://user:password@db:5432/sentiment
+REDIS_URL=redis://redis:6379
+EOL
+fi
 
-echo "Environment setup complete!"
+# Create default config.json if not exists
+if [ ! -f config.json ]; then
+    cat > config.json << EOL
+{
+    "youtube_api_key": "YOUR_API_KEY_HERE"
+}
+EOL
+    echo "Please update config.json with your YouTube API key"
+fi
+
+echo "Setup complete!"
