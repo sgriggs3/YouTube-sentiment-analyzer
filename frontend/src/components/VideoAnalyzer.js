@@ -1,45 +1,32 @@
+// frontend/src/components/VideoAnalyzer.js
 import React, { useState } from 'react';
-import { analyzeVideo } from '../services/api';
-import { toast } from 'react-toastify';
-import SentimentResults from './SentimentResults';
+import VideoInput from './VideoInput';
+import SentimentChart from './SentimentChart';
+import { fetchSentimentAnalysis } from '../services/api';
 
-const VideoAnalyzer = () => {
-  const [videoUrl, setVideoUrl] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState(null);
+function VideoAnalyzer() {
+    const [sentimentData, setSentimentData] = useState(null);
+    const [error, setError] = useState(null);
 
-  const handleAnalyze = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    try {
-      const data = await analyzeVideo(videoUrl);
-      setResults(data);
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const handleUrlSubmit = async (videoUrl) => {
+        setError(null);
+        try {
+            const data = await fetchSentimentAnalysis(videoUrl);
+            setSentimentData(data.sentiment);
+        } catch (err) {
+            setError("Failed to analyze sentiment. Please check the URL and backend server.");
+            setSentimentData(null);
+        }
+    };
 
-  return (
-    <div className="video-analyzer">
-      <form onSubmit={handleAnalyze}>
-        <input
-          type="text"
-          value={videoUrl}
-          onChange={(e) => setVideoUrl(e.target.value)}
-          placeholder="Enter YouTube video URL"
-          required
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Analyzing...' : 'Analyze'}
-        </button>
-      </form>
-
-      {results && <SentimentResults results={results} />}
-    </div>
-  );
-};
+    return (
+        <div>
+            <h1>YouTube Sentiment Analyzer</h1>
+            <VideoInput onUrlSubmit={handleUrlSubmit} />
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {sentimentData && <SentimentChart sentimentData={sentimentData} />}
+        </div>
+    );
+}
 
 export default VideoAnalyzer;

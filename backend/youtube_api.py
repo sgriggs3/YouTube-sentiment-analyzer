@@ -1,72 +1,51 @@
+# backend/youtube_api.py
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from .exceptions import YouTubeAPIError, VideoNotFoundError, QuotaExceededError
-import os
-import googleapiclient.discovery
-import googleapiclient.errors
-import logging
 
-logging.basicConfig(level=logging.ERROR)
+def fetch_comments(video_id, api_key):
+    """
+    Fetches YouTube comments for a given video ID using the YouTube API.
 
-def get_video_comments(video_id, api_key):
+    Args:
+        video_id (str): The ID of the YouTube video.
+        api_key (str): The API key for YouTube Data API v3.
+
+    Returns:
+        list: A list of comment texts, or None if there's an error.
+    """
     try:
         youtube = build('youtube', 'v3', developerKey=api_key)
-YOUTUBE_API_SERVICE_NAME = 'youtube'
-YOUTUBE_API_VERSION = 'v3'
-YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
-
-youtube = googleapiclient.discovery.build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=YOUTUBE_API_KEY)
-def get_video_comments(video_url):
-    video_id = video_url.split('v=')[-1]
         comments = []
-    try:
         request = youtube.commentThreads().list(
-            part='snippet',
+            part="snippet,replies",
             videoId=video_id,
-            maxResults=100,
-            textFormat="plainText"
+            maxResults=100  # You can adjust maxResults as needed
         )
-        response = request.execute()
-
-        for item in response['items']:
-            comments.append(item['snippet']['topLevelComment']['snippet']['textDisplay'])
-
-        # Handle pagination
-        while 'nextPageToken' in response:
-            request = youtube.commentThreads().list(
-                part='snippet',
-                videoId=video_id,
-                maxResults=100,
-                pageToken=response['nextPageToken'],
-                textFormat="plainText"
-            )
+        while request:
             response = request.execute()
-        while response:
+
             for item in response['items']:
-                comments.append(item['snippet']['topLevelComment']['snippet']['textDisplay'])
                 comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
                 comments.append(comment)
 
+                if 'replies' in item:
+                    for reply in item['replies']['comments']:
+                        reply_comment = reply['snippet']['textDisplay']
+                        comments.append(reply_comment)
+
+            request = youtube.commentThreads().list_next(request, response)
         return comments
-
-    except HttpError as e:
-    except HttpError as e:
-            if 'nextPageToken' in response:
-                request = youtube.commentThreads().list(
-                    part='snippet',
-                    videoId=video_id,
-                    pageToken=response['nextPageToken'],
-                    maxResults=100,
-                    textFormat="plainText"
-                )
-                response = request.execute()
-            else:
-                break
-
-    except googleapiclient.errors.HttpError as e:
-        logging.error(f"An HTTP error occurred: {e.resp.status} - {e.content}")
-        return []
     except Exception as e:
-        logging.error(f"An error occurred: {e}")
-    return comments
-        return []
+        print(f"An error occurred: {e}")
+        return None
+
+if __name__ == '__main__':
+    # Example usage (replace with your video ID and API key)
+    video_id = "dQw4w9WgXcQ"  # Example video ID (Never Gonna Give You Up)
+    api_key = "YOUR_API_KEY"  # Replace with your actual API key
+    comments = fetch_comments(video_id, api_key)
+    if comments:
+        print(f"Fetched {len(comments)} comments:")
+        for comment in comments:
+            print(comment)
+    else:
+        print("Failed to fetch comments.")

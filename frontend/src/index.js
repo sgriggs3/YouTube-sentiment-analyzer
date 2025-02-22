@@ -1,10 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './youtube_app/App'; // Import the new App component
+import ReactDOM from 'react-dom';
+import './index.css'; // You can keep or remove this
+import VideoAnalyzer from './components/VideoAnalyzer'; // Import VideoAnalyzer
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+ReactDOM.render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>
+    <VideoAnalyzer /> {/* Render VideoAnalyzer component */}
+  </React.StrictMode>,
+  document.getElementById('root')
 );

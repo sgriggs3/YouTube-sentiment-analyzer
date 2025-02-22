@@ -1,63 +1,54 @@
-// Import necessary libraries and components
-import React, { useEffect, useState } from 'react';
-import { Line, Bar, Pie } from 'react-chartjs-2';
+// frontend/src/components/SentimentChart.js
+import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 
-// Define the SentimentChart component
-const SentimentChart = ({ data, type }) => {
-  const [chartData, setChartData] = useState(data);
+function SentimentChart({ sentimentData }) {
+    const chartRef = useRef(null);
 
-  // Function to update chart data in real-time
-  const updateChartData = () => {
-    // Fetch new data from an API or other source
-    // For demonstration, we'll simulate data update
-    const newData = data.map(item => ({
-      ...item,
-      value: item.value + Math.floor(Math.random() * 10 - 5)
-    }));
-    setChartData(newData);
-  };
+    useEffect(() => {
+        if (chartRef && chartRef.current && sentimentData) {
+            const chartCanvas = chartRef.current.getContext('2d');
+            if (chartCanvas) {
+                new Chart(chartCanvas, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Positive', 'Negative', 'Neutral'],
+                        datasets: [{
+                            label: 'Sentiment Analysis',
+                            data: [
+                                sentimentData.positive,
+                                sentimentData.negative,
+                                sentimentData.neutral
+                            ],
+                            backgroundColor: [
+                                'rgba(75, 192, 192, 0.8)',
+                                'rgba(255, 99, 132, 0.8)',
+                                'rgba(255, 206, 86, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 206, 86, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        title: {
+                            display: true,
+                            text: 'Sentiment Analysis Results'
+                        }
+                    }
+                });
+            }
+        }
+    }, [sentimentData]);
 
-  useEffect(() => {
-    // Set an interval to update chart data every 5 seconds
-    const interval = setInterval(updateChartData, 5000);
-    return () => clearInterval(interval);
-  }, [data]);
-
-  // Prepare data for the chart
-  const chartConfig = {
-    labels: chartData.map(item => item.label),
-    datasets: [
-      {
-        label: 'Sentiment Analysis',
-        data: chartData.map(item => item.value),
-        backgroundColor: 'rgba(75,192,192,0.4)',
-        borderColor: 'rgba(75,192,192,1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  // Render the appropriate chart type based on the 'type' prop
-  const renderChart = () => {
-    switch (type) {
-      case 'line':
-        return <Line data={chartConfig} />;
-      case 'bar':
-        return <Bar data={chartConfig} />;
-      case 'pie':
-        return <Pie data={chartConfig} />;
-      default:
-        return <Line data={chartConfig} />;
-    }
-  };
-
-  return (
-    <div>
-      <h2>Sentiment Chart</h2>
-      {renderChart()}
-    </div>
-  );
-};
+    return (
+        <canvas ref={chartRef} />
+    );
+}
 
 export default SentimentChart;
