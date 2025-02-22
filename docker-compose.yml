@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_URL=postgresql://user:password@db:5432/sentiment
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=sentiment
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: sentiment-network
+    name: sentiment-network

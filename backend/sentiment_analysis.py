@@ -6,6 +6,7 @@ logging.basicConfig(level=logging.INFO)
 
 analyzer = SentimentIntensityAnalyzer()
 nlp = pipeline('sentiment-analysis')
+
 def analyze_sentiment(comments):
     sentiment_data = []
     for comment in comments:
@@ -16,13 +17,17 @@ def analyze_sentiment(comments):
                 sentiment = bert_result['label']
             else:
                 sentiment = 'positive' if vader_result['compound'] > 0 else 'negative'
-    except Exception as e:
-        logging.error(f"An error occurred during sentiment analysis: {e}")
-            sentiment = 'neutral'
-
-        sentiment_data.append({
-            'comment': comment,
-            'sentiment': sentiment
-        })
+                
+            sentiment_data.append({
+                'comment': comment,
+                'sentiment': sentiment
+            })
+            
+        except Exception as e:
+            logging.error(f"An error occurred during sentiment analysis: {e}")
+            sentiment_data.append({
+                'comment': comment,
+                'sentiment': 'neutral'
+            })
 
     return sentiment_data

@@ -3,20 +3,18 @@ class ConfigError(Exception):
     pass
 
 class YouTubeAPIError(Exception):
-    """Custom exception for YouTube API related errors."""
-    def __init__(self, message, status_code=None):
+    def __init__(self, message, status_code=500):
         super().__init__(message)
         self.status_code = status_code
 
 class VideoNotFoundError(YouTubeAPIError):
-    """Exception for when a video is not found."""
-    def __init__(self, video_id):
-        super().__init__(f"Video not found: {video_id}", status_code=404)
+    def __init__(self, message="Video not found"):
+        super().__init__(message, status_code=404)
 
 class QuotaExceededError(YouTubeAPIError):
-    """Exception for YouTube API quota exceeded."""
-    def __init__(self):
-        super().__init__("YouTube API quota exceeded", status_code=403)
+    def __init__(self, message="API quota exceeded"):
+        super().__init__(message, status_code=429)
+
 
 class InternalServerError(YouTubeAPIError):
     """Exception for YouTube API internal server errors."""

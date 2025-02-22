@@ -1,5 +1,19 @@
 {
-  "tasks": {
-    "build": "cd backend && pip install -r requirements.txt && cd ../frontend && npm install"
-  }
+    "name": "YouTube Sentiment Analyzer",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "backend",
+    "workspaceFolder": "/app",
+    "settings": {
+        "python.pythonPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true
+    },
+    "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+    ],
+    "forwardPorts": [3000, 5000],
+    "postCreateCommand": "python check_env.py"
 }
