@@ -4,6 +4,8 @@ from backend.sentiment_analysis import analyze_sentiment
 import os
 import logging
 from backend.exceptions import YouTubeAPIError, VideoNotFoundError, QuotaExceededError, InternalServerError, ServiceUnavailableError, BadRequestError
+import aiohttp
+import asyncio
 
 app = Flask(__name__)
 
@@ -18,7 +20,7 @@ if not API_KEY:
 
 
 @app.route('/comments')
-def get_comments():
+async def get_comments():
     video_url = request.args.get('url')
     if not video_url:
         return jsonify({"error": "Missing video URL"}), 400
@@ -28,7 +30,7 @@ def get_comments():
         return jsonify({"error": "Invalid YouTube URL"}), 400
 
     try:
-        comments = fetch_comments(video_id, API_KEY)
+        comments = await fetch_comments(video_id, API_KEY)
         if comments is None:
             return jsonify({"error": "Failed to fetch comments from YouTube API"}), 500
 
